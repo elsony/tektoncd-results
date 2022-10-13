@@ -78,7 +78,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, o results.Object) error {
 			return err
 		}
 		o.GetObjectKind().SetGroupVersionKind(gvk)
-		log.Infof("Post-GVK Object: %v", o)
+		log.Debugf("Post-GVK Object: %v", o)
 	}
 
 	// Update record.
@@ -95,7 +95,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, o results.Object) error {
 		// For now this is just TaskRuns.
 		logResult, logRecord, err := r.resultsClient.PutLog(ctx, o)
 		if err != nil {
-			log.Errorf("error creating TaskRun log Record: %v", err)
+			log.Debugf("error creating TaskRun log Record: %v", err)
 			return err
 		}
 		if logRecord != nil {
@@ -107,13 +107,13 @@ func (r *Reconciler) Reconcile(ctx context.Context, o results.Object) error {
 			return err
 		}
 		if needsStream {
-			log.Infof("streaming logs for TaskRun %s/%s", o.GetNamespace(), o.GetName())
+			log.Debugf("streaming logs for TaskRun %s/%s", o.GetNamespace(), o.GetName())
 			err = r.streamLogs(ctx, logResult, logRecord, o)
 			if err != nil {
 				log.Errorf("error streaming logs: %v", err)
 				return err
 			}
-			log.Infof("finished streaming logs for TaskRun %s/%s", o.GetNamespace(), o.GetName())
+			log.Debugf("finished streaming logs for TaskRun %s/%s", o.GetNamespace(), o.GetName())
 		}
 	}
 
@@ -125,25 +125,25 @@ func (r *Reconciler) Reconcile(ctx context.Context, o results.Object) error {
 			return err
 		}
 		if err := r.objectClient.Patch(ctx, o.GetName(), types.MergePatchType, patch, metav1.PatchOptions{}); err != nil {
-			log.Errorf("Patch: %v", err)
+			log.Errorf("annotation patch error: %v", err)
 			return err
 		}
 	} else {
-		log.Infof("skipping CRD patch - annotation patching disabled [%t] or annotations already match", r.cfg.GetDisableAnnotationUpdate())
+		log.Debugf("skipping CRD patch - annotation patching disabled [%t] or annotations already match", r.cfg.GetDisableAnnotationUpdate())
 	}
 
 	// If the Object is complete and not yet marked for deletion, cleanup the run resource from the cluster.
 	done := isDone(o)
-	log.Infof("should skipping resource deletion?  - done: %t, delete enabled: %t", done, r.cfg.GetCompletedResourceGracePeriod() != 0)
+	log.Debugf("should skipping resource deletion?  - done: %t, delete enabled: %t", done, r.cfg.GetCompletedResourceGracePeriod() != 0)
 	if done && r.cfg.GetCompletedResourceGracePeriod() != 0 {
 		if o := o.GetOwnerReferences(); len(o) > 0 {
-			log.Infof("resource is owned by another object, defering deletion to parent resource(s): %v", o)
+			log.Debugf("resource is owned by another object, defering deletion to parent resource(s): %v", o)
 			return nil
 		}
 
 		// We haven't hit the grace period yet - reenqueue the key for processing later.
 		if s := clock.Since(record.GetUpdatedTime().AsTime()); s < r.cfg.GetCompletedResourceGracePeriod() {
-			log.Infof("object is not ready for deletion - grace period: %v, time since completion: %v", r.cfg.GetCompletedResourceGracePeriod(), s)
+			log.Debugf("object is not ready for deletion - grace period: %v, time since completion: %v", r.cfg.GetCompletedResourceGracePeriod(), s)
 			r.enqueue(o, r.cfg.GetCompletedResourceGracePeriod())
 			return nil
 		}
@@ -155,7 +155,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, o results.Object) error {
 			return err
 		}
 	} else {
-		log.Infof("skipping resource deletion - done: %t, delete enabled: %t, %v", done, r.cfg.GetCompletedResourceGracePeriod() != 0, r.cfg.GetCompletedResourceGracePeriod())
+		log.Debugf("skipping resource deletion - done: %t, delete enabled: %t, %v", done, r.cfg.GetCompletedResourceGracePeriod() != 0, r.cfg.GetCompletedResourceGracePeriod())
 	}
 
 	return nil
