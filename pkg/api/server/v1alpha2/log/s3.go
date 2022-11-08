@@ -58,6 +58,18 @@ func NewS3LogStreamer(trl *v1alpha2.TaskRunLog, bufSize int, conf *conf.ConfigFi
 	if err != nil {
 		return nil, err
 	}
+
+	exists, err := isBucketExists(client, conf.S3_BUCKET_NAME, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		if err := createBucket(client, conf.S3_BUCKET_NAME, conf.S3_REGION, ctx); err != nil {
+			return nil, err
+		}
+	}
+
 	uploader := manager.NewUploader(client)
 	out, err := uploader.S3.CreateMultipartUpload(ctx,
 		&s3.CreateMultipartUploadInput{
@@ -89,6 +101,31 @@ func NewS3LogStreamer(trl *v1alpha2.TaskRunLog, bufSize int, conf *conf.ConfigFi
 	}
 
 	return ls, nil
+}
+
+func isBucketExists(client *s3.Client, bucketName string, context context.Context) (bool, error) {
+	buckets, err := client.ListBuckets(context, &s3.ListBucketsInput{})
+	if err != nil {
+		return false, err
+	}
+	for _, bucket := range buckets.Buckets {
+		if bucket.Name == &bucketName {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func createBucket(client *s3.Client, bucketName string, region string, context context.Context) error {
+	_, err := client.CreateBucket(context, &s3.CreateBucketInput{
+		Bucket:                    aws.String(bucketName),
+		ACL:                       types.BucketCannedACLPrivate,
+		CreateBucketConfiguration: &types.CreateBucketConfiguration{LocationConstraint: types.BucketLocationConstraint(region)},
+	})
+	if err != nil {
+		log.Printf("Failed to create bucket: %v", err)
+	}
+	return nil
 }
 
 func initConfig(conf *conf.ConfigFile, ctx context.Context) (*s3.Client, error) {
