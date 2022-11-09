@@ -94,7 +94,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading kube config: %v", err)
 	}
-	v1a2, err := v1alpha2.New(db, ctx, v1alpha2.WithAuth(auth.NewKCP(config)))
+
+	var authChecker auth.Checker
+	if len(configFile.KCP_CONFIG) == 0 {
+		authChecker = auth.NewRBAC(config)
+	} else {
+		authChecker = auth.NewKCP(config)
+	}
+
+	v1a2, err := v1alpha2.New(db, ctx, v1alpha2.WithAuth(authChecker), v1alpha2.WithConf(configFile))
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
