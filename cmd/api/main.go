@@ -49,6 +49,7 @@ import (
 func main() {
 	// points to env file folder for local development
 	viper.AddConfigPath("./config/env")
+	viper.AddConfigPath("/etc/config/server")
 	viper.SetConfigName("config")
 	viper.SetConfigType("env")
 
