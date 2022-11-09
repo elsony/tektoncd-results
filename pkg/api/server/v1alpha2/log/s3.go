@@ -108,8 +108,9 @@ func isBucketExists(client *s3.Client, bucketName string, context context.Contex
 	if err != nil {
 		return false, err
 	}
+
 	for _, bucket := range buckets.Buckets {
-		if bucket.Name == &bucketName {
+		if *bucket.Name == bucketName {
 			return true, nil
 		}
 	}
