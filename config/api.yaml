@@ -34,7 +34,8 @@ spec:
       serviceAccountName: api
       containers:
         - name: api
-          image: docker.io/aandrienko/api-b1b7ffa9ba32f7c3020c3b68830b30a8@sha256:38b33102613bb51f32b3992bb793aa36acd3f50a0fe82cf50d52c57ad5ab240d
+          imagePullPolicy: Always
+          image: docker.io/aandrienko/tekton-server-api:latest
           env:
             # See cmd/api/README.md for documentation of these vars.
             - name: DB_USER

@@ -109,7 +109,7 @@ func (s *Server) UpdateLog(srv pb.Logs_UpdateLogServer) error {
 		// Ensure that we are receiving logs for the same record
 		if name == "" {
 			name = recv.GetName()
-			s.logger.Debugf("receiving logs for %s", name)
+			s.logger.Debugf("receiving logs for %s", name)//
 		}
 		if name != recv.GetName() {
 			err := fmt.Errorf("cannot put logs for multiple records in the same server")
@@ -138,6 +138,7 @@ func (s *Server) UpdateLog(srv pb.Logs_UpdateLogServer) error {
 		}
 
 		if stream == nil {
+			s.logger.Info("to stream!!!")
 			stream, object, err = log.ToStream(srv.Context(), rec, s.config)
 			if err != nil {
 				return s.handleReturn(srv, rec, object, bytesWritten, err)
