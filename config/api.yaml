@@ -51,6 +51,8 @@ spec:
               value: tekton-results-postgres-service.tekton-pipelines.svc.cluster.local
             - name: DB_NAME
               value: tekton-results
+            - name: LOG_LEVEL
+              value: debug
           volumeMounts:
             - name: config
               mountPath: /etc/tekton/results
