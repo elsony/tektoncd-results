@@ -34,7 +34,7 @@ spec:
       serviceAccountName: api
       containers:
         - name: api
-          image: ko://github.com/tektoncd/results/cmd/api
+          image: docker.io/aandrienko/api-f5d789c64b384cabf8e800e360074264@sha256:4b37c14767009e9921b441b11a14c293dfb5d7629c6ec35d79211bf24df1de97
           env:
             # See cmd/api/README.md for documentation of these vars.
             - name: DB_USER
