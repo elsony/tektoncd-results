@@ -21,7 +21,7 @@ metadata:
 data:
   zap-logger-config: |
     {
-      "level": "info",
+      "level": "debug",
       "development": false,
       "outputPaths": ["stdout"],
       "errorOutputPaths": ["stderr"],
@@ -43,4 +43,4 @@ data:
 
   # Log level overrides
   # Changes are be picked up immediately.
-  loglevel.watcher: "info"
+  loglevel.watcher: "debug"
