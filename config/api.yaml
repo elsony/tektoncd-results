@@ -34,7 +34,7 @@ spec:
       serviceAccountName: api
       containers:
         - name: api
-          image: docker.io/aandrienko/api-f5d789c64b384cabf8e800e360074264@sha256:4b37c14767009e9921b441b11a14c293dfb5d7629c6ec35d79211bf24df1de97
+          image: docker.io/aandrienko/api-b1b7ffa9ba32f7c3020c3b68830b30a8@sha256:38b33102613bb51f32b3992bb793aa36acd3f50a0fe82cf50d52c57ad5ab240d
           env:
             # See cmd/api/README.md for documentation of these vars.
             - name: DB_USER
