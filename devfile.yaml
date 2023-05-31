@@ -10,10 +10,10 @@ metadata:
   attributes:
     alpha.dockerimage-port: 8080
   provider: Red Hat
-  supportUrl: https://github.com/devfile-samples/devfile-support#support-information
-parent:
-  id: go
-  registryUrl: "https://registry.devfile.io"
+#   supportUrl: https://github.com/devfile-samples/devfile-support#support-information
+# parent:
+#   id: go
+#   registryUrl: "https://registry.devfile.io"
 components:
   - name: image-build
     image:
