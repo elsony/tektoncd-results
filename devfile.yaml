@@ -20,7 +20,7 @@ components:
       imageName: nodejs-image:latest
       dockerfile:
         uri: images/api/Dockerfile
-        buildContext: /
+        buildContext: .
         rootRequired: false
   - name: kubernetes-deploy
     attributes:
